@@ -22,3 +22,7 @@ _testmain.go
 *.exe
 *.test
 *.prof
+
+gtt
+.gtt.json
+test.json
