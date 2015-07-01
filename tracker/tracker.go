@@ -11,7 +11,7 @@ import (
 var Now = time.Now()
 
 type Tracker struct {
-	Name string
+	Name string         `json:"-"`
 	Days map[string]Day `json:"days"`
 }
 
