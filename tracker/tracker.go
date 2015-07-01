@@ -17,8 +17,11 @@ type Tracker struct {
 
 func New(filename string) (*Tracker, error) {
 	t := &Tracker{Name: filename, Days: make(map[string]Day)}
-	flags := os.O_CREATE | os.O_RDONLY
+	flags := os.O_RDONLY
 	f, err := os.OpenFile(t.Name, flags, 0644)
+	if os.IsNotExist(err) {
+		return t, nil
+	}
 	defer f.Close()
 	if err != nil {
 		return t, err
@@ -32,7 +35,7 @@ func New(filename string) (*Tracker, error) {
 }
 
 func (t *Tracker) Save() error {
-	flags := os.O_TRUNC | os.O_WRONLY
+	flags := os.O_CREATE | os.O_TRUNC | os.O_WRONLY
 	f, err := os.OpenFile(t.Name, flags, 0644)
 	defer f.Close()
 	if err != nil {
