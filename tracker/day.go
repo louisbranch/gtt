@@ -2,6 +2,7 @@ package tracker
 
 import (
 	"errors"
+	"strconv"
 	"time"
 )
 
@@ -57,7 +58,7 @@ func (d *Day) Status() string {
 	var dur time.Duration
 	size := len(d.Tasks)
 	if d.Start.IsZero() || size == 0 {
-		return dur.String()
+		return "0h0m"
 	}
 	task := d.Tasks[size-1]
 	dur = task.End.Sub(d.Start)
@@ -66,7 +67,9 @@ func (d *Day) Status() string {
 			dur -= p.End.Sub(p.Start)
 		}
 	}
-	return dur.String()
+	h := strconv.Itoa(int(dur.Hours()))
+	m := strconv.Itoa(int(dur.Minutes()) % 60)
+	return h + "h" + m + "m"
 }
 
 func (d *Day) paused() bool {

@@ -119,7 +119,7 @@ func TestDayResume_Resumed(t *testing.T) {
 func TestDayStats_DayEmpty(t *testing.T) {
 	d := Day{}
 	result := d.Status()
-	expecting := "0"
+	expecting := "0h0m"
 	if expecting != result {
 		t.Errorf("expected:\n%s\ngot:\n%s\n", expecting, result)
 	}
@@ -138,7 +138,7 @@ func TestDayStats_DayComplete(t *testing.T) {
 		},
 	}
 	result := d.Status()
-	expecting := "4h20m0s"
+	expecting := "4h20m"
 	if expecting != result {
 		t.Errorf("expected:\n%s\ngot:\n%s\n", expecting, result)
 	}
@@ -147,7 +147,7 @@ func TestDayStats_DayComplete(t *testing.T) {
 func TestDayStats_DayNoTasks(t *testing.T) {
 	d := Day{Start: Now, Tasks: []Task{}}
 	result := d.Status()
-	expecting := "0"
+	expecting := "0h0m"
 	if expecting != result {
 		t.Errorf("expected:\n%s\ngot:\n%s\n", expecting, result)
 	}
@@ -166,7 +166,7 @@ func TestDayStats_DayPaused(t *testing.T) {
 		},
 	}
 	result := d.Status()
-	expecting := "4h45m0s"
+	expecting := "4h45m"
 	if expecting != result {
 		t.Errorf("expected:\n%s\ngot:\n%s\n", expecting, result)
 	}

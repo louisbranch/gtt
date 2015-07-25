@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	file    = "test.json"
+	file    = ".gtt"
 	version = "0.0.1"
 )
 
