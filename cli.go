@@ -6,7 +6,8 @@ import (
 	"log"
 	"os"
 
-	"github.com/luizbranco/gtt/tracker"
+	"github.com/luizbranco/gtt/internal/invoice"
+	"github.com/luizbranco/gtt/internal/tracker"
 )
 
 const (
@@ -31,8 +32,7 @@ func task(t *tracker.Tracker) error {
 	if err != nil {
 		return err
 	}
-	err = d.Task(os.Args[2])
-	if err != nil {
+	if err := d.Task(os.Args[2]); err != nil {
 		return err
 	}
 	t.SaveDay(d)
@@ -44,8 +44,7 @@ func pause(t *tracker.Tracker) error {
 	if err != nil {
 		return err
 	}
-	err = d.Pause()
-	if err != nil {
+	if err := d.Pause(); err != nil {
 		return err
 	}
 	t.SaveDay(d)
@@ -57,8 +56,7 @@ func resume(t *tracker.Tracker) error {
 	if err != nil {
 		return err
 	}
-	err = d.Resume()
-	if err != nil {
+	if err := d.Resume(); err != nil {
 		return err
 	}
 	t.SaveDay(d)
@@ -75,8 +73,23 @@ func status(t *tracker.Tracker) error {
 	return nil
 }
 
+func printInvoice(t *tracker.Tracker) error {
+	i, err := invoice.New(t)
+	if err != nil {
+		return err
+	}
+	i.ToHTML()
+	return nil
+}
+
 func run(t *tracker.Tracker) error {
 	switch os.Args[1] {
+	case "-v", "--version":
+		fmt.Printf("%s\n", version)
+		return nil
+	case "-h", "--help":
+		help()
+		return nil
 	case "start":
 		return start(t)
 	case "task":
@@ -87,6 +100,8 @@ func run(t *tracker.Tracker) error {
 		return resume(t)
 	case "status":
 		return status(t)
+	case "invoice":
+		return printInvoice(t)
 	default:
 		return errors.New("Unknown command")
 	}
@@ -95,17 +110,19 @@ func run(t *tracker.Tracker) error {
 func main() {
 	if len(os.Args) < 2 {
 		help()
-		return
+		os.Exit(1)
 	}
+
 	t, err := tracker.New(file)
 	if err != nil {
 		log.Fatal(err)
 	}
-	err = run(t)
-	if err == nil {
-		err = t.Save()
+
+	if err := run(t); err != nil {
+		log.Fatal(err)
 	}
-	if err != nil {
+
+	if err := t.Save(); err != nil {
 		fmt.Printf("[ERROR] %s\n", err.Error())
 		os.Exit(1)
 	}

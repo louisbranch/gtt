@@ -12,6 +12,8 @@ type Day struct {
 	Pauses []Pause   `json:"pauses"`
 }
 
+type Days []Day
+
 type Pause struct {
 	Start time.Time `json:"start"`
 	End   time.Time `json:"end"`
@@ -54,11 +56,11 @@ func (d *Day) Resume() error {
 	return nil
 }
 
-func (d *Day) Status() string {
+func (d *Day) Duration() time.Duration {
 	var dur time.Duration
 	size := len(d.Tasks)
 	if d.Start.IsZero() || size == 0 {
-		return "0h0m"
+		return 0
 	}
 	task := d.Tasks[size-1]
 	dur = task.End.Sub(d.Start)
@@ -67,6 +69,11 @@ func (d *Day) Status() string {
 			dur -= p.End.Sub(p.Start)
 		}
 	}
+	return dur
+}
+
+func (d *Day) Status() string {
+	dur := d.Duration()
 	h := strconv.Itoa(int(dur.Hours()))
 	m := strconv.Itoa(int(dur.Minutes()) % 60)
 	return h + "h" + m + "m"
@@ -79,4 +86,20 @@ func (d *Day) paused() bool {
 	}
 	last := d.Pauses[size-1]
 	return last.End.IsZero()
+}
+
+func (d *Day) SameDay() bool {
+	return false
+}
+
+func (slice Days) Len() int {
+	return len(slice)
+}
+
+func (slice Days) Less(a, b int) bool {
+	return slice[a].Start.Before(slice[b].Start)
+}
+
+func (slice Days) Swap(a, b int) {
+	slice[a], slice[b] = slice[b], slice[a]
 }
