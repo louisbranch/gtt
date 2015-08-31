@@ -12,7 +12,7 @@ import (
 
 const (
 	file    = ".gtt"
-	version = "0.0.1"
+	version = "1.0.0"
 )
 
 func start(t *tracker.Tracker) error {
