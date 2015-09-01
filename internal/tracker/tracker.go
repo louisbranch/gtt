@@ -1,6 +1,7 @@
 package tracker
 
 import (
+	"encoding/gob"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -11,8 +12,8 @@ import (
 var Now = time.Now()
 
 type Tracker struct {
-	Name string         `json:"-"`
-	Days map[string]Day `json:"days"`
+	Name string
+	Days map[string]Day
 }
 
 func New(filename string) (*Tracker, error) {
@@ -26,8 +27,8 @@ func New(filename string) (*Tracker, error) {
 	if err != nil {
 		return t, err
 	}
-	decoder := json.NewDecoder(f)
-	err = decoder.Decode(t)
+	dec := gob.NewDecoder(f)
+	err = dec.Decode(t)
 	if err != nil && err != io.EOF {
 		return t, err
 	}
@@ -41,8 +42,19 @@ func (t *Tracker) Save() error {
 	if err != nil {
 		return err
 	}
-	encoder := json.NewEncoder(f)
-	err = encoder.Encode(t)
+	enc := gob.NewEncoder(f)
+	err = enc.Encode(t)
+	return err
+}
+
+func (t *Tracker) ToJSON() error {
+	f := os.Stdout
+	defer f.Close()
+	blob, err := json.MarshalIndent(t, "", "  ")
+	if err != nil {
+		return err
+	}
+	_, err = f.Write(blob)
 	return err
 }
 

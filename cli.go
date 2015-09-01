@@ -82,6 +82,11 @@ func printInvoice(t *tracker.Tracker) error {
 	return nil
 }
 
+func toJson(t *tracker.Tracker) error {
+	err := t.ToJSON()
+	return err
+}
+
 func run(t *tracker.Tracker) error {
 	switch os.Args[1] {
 	case "-v", "--version":
@@ -102,6 +107,8 @@ func run(t *tracker.Tracker) error {
 		return status(t)
 	case "invoice":
 		return printInvoice(t)
+	case "json":
+		return toJson(t)
 	default:
 		return errors.New("Unknown command")
 	}
