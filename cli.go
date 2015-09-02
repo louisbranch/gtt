@@ -3,7 +3,6 @@ package main
 import (
 	"errors"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/luizbranco/gtt/internal/invoice"
@@ -12,7 +11,7 @@ import (
 
 const (
 	file    = ".gtt"
-	version = "1.0.0"
+	version = "1.1.0"
 )
 
 func start(t *tracker.Tracker) error {
@@ -82,9 +81,28 @@ func printInvoice(t *tracker.Tracker) error {
 	return nil
 }
 
-func toJson(t *tracker.Tracker) error {
+func toJSON(t *tracker.Tracker) error {
 	err := t.ToJSON()
 	return err
+}
+
+func hook() error {
+	if len(os.Args) < 3 || os.Args[2] != "git" {
+		return errors.New("Unknown hook")
+	}
+	path := ".git/hooks/commit-msg"
+	flags := os.O_CREATE | os.O_TRUNC | os.O_WRONLY
+	f, err := os.OpenFile(path, flags, 0744)
+	if err != nil {
+		return fmt.Errorf("Error creating %s: %s", path, err)
+	}
+	defer f.Close()
+	script := `#!/bin/sh
+head -n 1 .git/COMMIT_EDITMSG | xargs -I % gtt task "%"`
+	if _, err := f.WriteString(script); err != nil {
+		return fmt.Errorf("Error writing to %s: %s", path, err)
+	}
+	return nil
 }
 
 func run(t *tracker.Tracker) error {
@@ -108,10 +126,17 @@ func run(t *tracker.Tracker) error {
 	case "invoice":
 		return printInvoice(t)
 	case "json":
-		return toJson(t)
+		return toJSON(t)
+	case "hook":
+		return hook()
 	default:
 		return errors.New("Unknown command")
 	}
+}
+
+func fatalError(err error) {
+	fmt.Printf("[ERROR] %s\n", err)
+	os.Exit(1)
 }
 
 func main() {
@@ -122,15 +147,14 @@ func main() {
 
 	t, err := tracker.New(file)
 	if err != nil {
-		log.Fatal(err)
+		fatalError(err)
 	}
 
 	if err := run(t); err != nil {
-		log.Fatal(err)
+		fatalError(err)
 	}
 
 	if err := t.Save(); err != nil {
-		fmt.Printf("[ERROR] %s\n", err.Error())
-		os.Exit(1)
+		fatalError(err)
 	}
 }

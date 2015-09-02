@@ -38,10 +38,10 @@ func New(filename string) (*Tracker, error) {
 func (t *Tracker) Save() error {
 	flags := os.O_CREATE | os.O_TRUNC | os.O_WRONLY
 	f, err := os.OpenFile(t.Name, flags, 0644)
-	defer f.Close()
 	if err != nil {
 		return err
 	}
+	defer f.Close()
 	enc := gob.NewEncoder(f)
 	err = enc.Encode(t)
 	return err

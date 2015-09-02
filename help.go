@@ -10,6 +10,8 @@ func help() {
 
   -v, --version       output version number
   -h, --help          output this information
+  init                create .gtt file on current dir
+  hook git            create git commit-msg hook
   start               start day
   task <description>  add a task
   pause               pause day
