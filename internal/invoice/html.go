@@ -16,6 +16,11 @@ const html = `
 			Invoice -
 			{{.From.Format "Jan 02, 2006" }} / {{.To.Format "Jan 02, 2006" }}
 		</title>
+    <style type="text/css" media="print">
+      * {
+          overflow: visible !important;
+      }
+    </style>
   </head>
 	<body style="background-color: #eee">
 	<div class="mdl-layout">
