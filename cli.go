@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/luizbranco/gtt/internal/invoice"
-	"github.com/luizbranco/gtt/internal/tracker"
+	"github.com/louisbranch/gtt/internal/invoice"
+	"github.com/louisbranch/gtt/internal/tracker"
 )
 
 const (
@@ -25,7 +25,7 @@ func start(t *tracker.Tracker) error {
 
 func task(t *tracker.Tracker) error {
 	if len(os.Args) < 3 {
-		return errors.New("Task description is required")
+		return errors.New("task description is required")
 	}
 	d, err := t.Today()
 	if err != nil {
@@ -88,19 +88,19 @@ func toJSON(t *tracker.Tracker) error {
 
 func hook() error {
 	if len(os.Args) < 3 || os.Args[2] != "git" {
-		return errors.New("Unknown hook")
+		return errors.New("unknown hook")
 	}
 	path := ".git/hooks/commit-msg"
 	flags := os.O_CREATE | os.O_TRUNC | os.O_WRONLY
 	f, err := os.OpenFile(path, flags, 0744)
 	if err != nil {
-		return fmt.Errorf("Error creating %s: %s", path, err)
+		return fmt.Errorf("error creating %s: %s", path, err)
 	}
 	defer f.Close()
 	script := `#!/bin/sh
 head -n 1 .git/COMMIT_EDITMSG | xargs -I % gtt task "%"`
 	if _, err := f.WriteString(script); err != nil {
-		return fmt.Errorf("Error writing to %s: %s", path, err)
+		return fmt.Errorf("error writing to %s: %s", path, err)
 	}
 	return nil
 }
@@ -130,7 +130,7 @@ func run(t *tracker.Tracker) error {
 	case "hook":
 		return hook()
 	default:
-		return errors.New("Unknown command")
+		return errors.New("unknown command")
 	}
 }
 

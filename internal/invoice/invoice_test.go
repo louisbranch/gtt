@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/luizbranco/gtt/internal/tracker"
+	"github.com/louisbranch/gtt/internal/tracker"
 )
 
 func TestInvoice_SumDurations(t *testing.T) {

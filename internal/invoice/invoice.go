@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/luizbranco/gtt/internal/tracker"
+	"github.com/louisbranch/gtt/internal/tracker"
 )
 
 const dateFormat = "2006-01-02"
